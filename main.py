@@ -46,7 +46,7 @@ class Game:
         self.enemy_step = pygame.mixer.Sound('audio/Fast Heartbeat Sound Effects _ Sound Effects For Editor soundeffects.mp3')
         self.enemy_step.set_volume(0)
 
-        self.jumpscare = VideoFileClip('C:/Users/jesper.vennstrom/Desktop/Tillampad/The_Cryptwalker/audio/jumpscare_video.mp4')
+        self.jumpscare = VideoFileClip('audio/jumpscare_video.mp4')
 
 
     #Function to create the map
@@ -84,7 +84,7 @@ class Game:
 
             if 0 <= new_row < ROW_SIZE and 0 <= new_col < COLUMN_SIZE and grid[new_row][new_col] == 0:
                 # If the neighbor is not visited, carve a path and recursively visit it
-                grid[row + dr // 2][col + dc // 2] = 1
+                grid[row + dr // 2][col + dc // 2] = "1"
                 
                 self.generateMaze(grid, (new_row, new_col))
             else:
@@ -120,11 +120,16 @@ class Game:
 
 
     #Function to start a new game
+
     def new(self):
         # a new game starts
         pygame.mixer.stop() #Stop all previous music
         self.playing = True #Variable thats says you're in the main game
         self.win = False
+        timer_minutes = 0
+        self.timer_seconds = time.perf_counter()
+        self.time_elapsed = [timer_minutes, self.timer_seconds]
+        self.timer_counter = 1
 
         #Set up sprite groups
         self.all_sprites = pygame.sprite.LayeredUpdates()
@@ -141,6 +146,8 @@ class Game:
         self.generateMaze(self.maze_grid, (0,0))
         self.convertMaze(self.maze_grid)
         self.createTilemap()
+        self.timer = self.font.render(str(self.time_elapsed[0]) + ':' + str(self.time_elapsed[1]), True, WHITE)
+        self.timer_rect = self.timer.get_rect(center=(WIN_WIDTH - 50, 50))
 
         #Start background audio (loop it)
         self.background_audio.play(loops = -1)
@@ -157,13 +164,24 @@ class Game:
     def update(self):
         #game loop updates
         self.all_sprites.update()
+        self.timerUpdate()
+
+    def timerUpdate(self):
+        self.time_elapsed[1] = int((time.perf_counter() - self.timer_seconds)) % 60
+        if self.time_elapsed[1] == 0 and self.timer_counter == 0:
+            self.time_elapsed[0] += 1
+            self.timer_counter += 1
+        elif self.time_elapsed[1] != 0:
+            self.timer_counter = 0
+        self.timer = self.font.render(str(self.time_elapsed[0]) + ':' + str(self.time_elapsed[1]%60), True, WHITE)
+        self.screen.blit(self.timer, self.timer_rect)
+        pygame.display.update()
 
     #Draw everything on the screen
     def draw(self):
         self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
         self.clock.tick(FPS)
-        pygame.display.update()
 
     #The main loop of the game
     def main(self):
@@ -182,7 +200,7 @@ class Game:
         self.jumpscare.preview()
 
         #Create text for the screen
-        text = self.font.render('You Died', True, WHITE,)
+        text = self.font.render('You Died', True, WHITE)
         #Create a hitbox for the text aswell as align it
         text_rect = text.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
 
