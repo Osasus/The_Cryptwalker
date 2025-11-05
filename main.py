@@ -22,6 +22,7 @@ class Game:
         #Variable to say if you've won
         self.win = False
 
+        self.records = "local_record.txt"
         #Import a font
         self.font = pygame.font.Font("comici.ttf", 32)
 

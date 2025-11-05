@@ -222,6 +222,8 @@ class Player(pygame.sprite.Sprite):
         if (36 * TILE_SIZE) < self.total_y_change:
             # Set win flag to True and end the game if the player passed the finish line
             self.game.win = True
+            with open(self.game.records, "a") as file:
+                file.write(str(self.game.time_elapsed[0]) + ":" + str(self.game.time_elapsed[1]))
             self.game.playing = False
     # Define a method to handle player movement based on key inputs
     def movement(self):
