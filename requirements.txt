@@ -1,0 +1,3 @@
+*Python 3.12 https://www.python.org/downloads/release/python-3127/
+*Pygame "pip install pygame"
+*movie py 1.0.3 "pip install moviepy==1.0.3"
