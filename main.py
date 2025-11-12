@@ -127,10 +127,7 @@ class Game:
         pygame.mixer.stop() #Stop all previous music
         self.playing = True #Variable thats says you're in the main game
         self.win = False
-        timer_minutes = 0
-        self.timer_seconds = time.perf_counter()
-        self.time_elapsed = [timer_minutes, self.timer_seconds]
-        self.timer_counter = 1
+        self.start_time = time.perf_counter()
 
         #Set up sprite groups
         self.all_sprites = pygame.sprite.LayeredUpdates()
@@ -147,8 +144,6 @@ class Game:
         self.generateMaze(self.maze_grid, (0,0))
         self.convertMaze(self.maze_grid)
         self.createTilemap()
-        self.timer = self.font.render(str(self.time_elapsed[0]) + ':' + str(self.time_elapsed[1]), True, WHITE)
-        self.timer_rect = self.timer.get_rect(center=(WIN_WIDTH - 50, 50))
 
         #Start background audio (loop it)
         self.background_audio.play(loops = -1)
@@ -157,6 +152,13 @@ class Game:
     #Check if you quit the game and end the game if you do
     def events(self):
         #game loop events
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_r]:
+            pygame.mixer.stop()
+            for sprite in self.all_sprites:
+                sprite.kill()
+            self.new()
+            
         for event in pygame.event.get():
            if event.type == pygame.QUIT:
                 self.playing = False
@@ -168,13 +170,10 @@ class Game:
         self.timerUpdate()
 
     def timerUpdate(self):
-        self.time_elapsed[1] = int((time.perf_counter() - self.timer_seconds)) % 60
-        if self.time_elapsed[1] == 0 and self.timer_counter == 0:
-            self.time_elapsed[0] += 1
-            self.timer_counter += 1
-        elif self.time_elapsed[1] != 0:
-            self.timer_counter = 0
-        self.timer = self.font.render(str(self.time_elapsed[0]) + ':' + str(self.time_elapsed[1]%60), True, WHITE)
+        time_elapsed = time.perf_counter() - self.start_time
+        self.time_array = [time_elapsed // 60, time_elapsed % 60]
+        self.timer = self.font.render(str(self.time_array[0]) + ':' + str(self.time_array[1]), True, WHITE)
+        self.timer_rect = self.timer.get_rect(center=(WIN_WIDTH - 50, 50))
         self.screen.blit(self.timer, self.timer_rect)
         pygame.display.update()
 
