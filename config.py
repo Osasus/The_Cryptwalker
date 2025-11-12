@@ -1,7 +1,7 @@
 # Define constants for the game window size, tile size, rendering size, and frames per second
 WIN_WIDTH = 1280
 WIN_HEIGHT = 720
-TILE_SIZE = 16
+TILE_SIZE = 160
 RENDER_SIZE = 32
 FPS = 60
 
